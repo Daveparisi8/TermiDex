@@ -200,7 +200,6 @@ def catch_false():
         if not pokemon.get("caught", False):
             print(pokemon["name"]["english"])
 
-### Persistance
 try:
     with open("users.json", "r") as f:
         data = json.load(f)
@@ -208,7 +207,6 @@ try:
 except FileNotFoundError:
     users = {}
 
-# Use this instead of directly loading from pokedex.json
 if os.path.exists("pokemon_data.json"):
     with open("pokemon_data.json", "r", encoding="utf-8") as f:
         national_pokedex = json.load(f)
@@ -216,7 +214,6 @@ else:
     with open("pokedex.json", "r", encoding="utf-8") as f:
         national_pokedex = json.load(f)
 
-# This converts the JSON data into Pokemon objects for use in your app
 pokemon_list = []
 for p in national_pokedex:
     pokemon = Pokemon(
@@ -238,8 +235,6 @@ for p in national_pokedex:
     )
     pokemon_list.append(pokemon)
 
-
-### User Data
 users = {}
 user = loginData("Ash", "pikachu123", "pikachu123", 1234)
 users[user.username.lower()] = user
