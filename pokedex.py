@@ -93,7 +93,7 @@ class loginData:
         
     
     }
-
+#Classes
     @classmethod
     def from_dict(cls, data):
         return cls(data["username"], data["password"], data["password"], data["pin"])
