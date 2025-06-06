@@ -46,7 +46,6 @@ import os
 
 ### National pokedex. Contains all pokemon
 
-
 ### Application login / Setup
 class loginData:
     def __init__(self, username, password, confirm_password, pin):
@@ -169,9 +168,9 @@ def login():
 def new_user():
     print("-Create New Account-")
     while True:
-        username = input("Select a username: ")
+        username = input("Select a user name: ")
         if username in users:
-            print("User exists already. Accounts must be unique. Please try again..")
+            print("User name is taken. Please select a new user name.")
         else:
             password = input("Select a password: ")
             c_password = input ("confirm your password: ")
@@ -179,7 +178,7 @@ def new_user():
                 while True:
                     try:
                         pin = input("Enter a 4-digit PIN: ")
-                    except ValueError:\
+                    except ValueError:
                         print("Invalid PIN selection. Please try again.")
 
                     c_pin = input("Confirm 4-digit PIN: ")
@@ -188,7 +187,6 @@ def new_user():
 
                         match = next((p for p in national_pokedex if p["name"]["english"].lower() == fav_pk), None)
                         
-
                         if match:
                             print(json.dumps(match, indent=2))
                         else:
@@ -224,7 +222,6 @@ for p in national_pokedex:
     )
     pokemon_list.append(pokemon)
 
-
 pokemon_list = []
 for p in national_pokedex:
     pokemon = Pokemon(
@@ -239,3 +236,4 @@ users = {}
 user = loginData("Ash", "pikachu123", "pikachu123", 1234)
 users[user.username.lower()] = user
 
+new_user()
