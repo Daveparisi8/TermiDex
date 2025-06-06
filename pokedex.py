@@ -197,6 +197,12 @@ def catch_false():
     for pokemon in national_pokedex:
         if not pokemon.get("caught", False):
             print(pokemon["name"]["english"])
+def catch_true():
+    for pokemon in national_pokedex:
+        if pokemon.get("caught", False):
+            print(pokemon["name"]["english"])
+
+
 
 try:
     with open("users.json", "r") as f:
@@ -222,18 +228,10 @@ for p in national_pokedex:
     )
     pokemon_list.append(pokemon)
 
-pokemon_list = []
-for p in national_pokedex:
-    pokemon = Pokemon(
-        name=p["name"]["english"],
-        types=p["type"],
-        evolves_to=p.get("evolution", {}).get("next", []),
-        caught=p.get("caught", False)
-    )
-    pokemon_list.append(pokemon)
-
 users = {}
 user = loginData("Ash", "pikachu123", "pikachu123", 1234)
 users[user.username.lower()] = user
+
+
 
 new_user()
