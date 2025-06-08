@@ -37,21 +37,24 @@
 #               /   .''               >::'  /
 #               `',:                 :    .'
 #                                    `:.'
-import array
-import random
-import math
-import json
-import sys
-import os
+###############
+### Imports ###
+###############
+              #   #
+import json   #
+import sys    #
+import os     #
+import hashlib#
+              #
+###############
 
-### National pokedex. Contains all pokemon
 
 ### Application login / Setup
+
 class loginData:
     def __init__(self, username, password, confirm_password, pin):
         self.username = username
         self.password = password
-        self.confirm_password = confirm_password
         self.pin = pin
         self.login_attempts = 0
         self.is_locked = False
@@ -61,9 +64,17 @@ class loginData:
     
     def __repr__(self):
         return self.__str__()
+    import hashlib, os
 
-    def is_valid_password(self):
-        return self.password == self.confirm_password
+    def _hash_password(self, raw):
+        salt = os.urandom(16)
+        key = hashlib.pbkdf2_hmac('sha256', raw.encode(), salt, 100_000)
+        return salt + key
+
+    def check_password(self, raw):
+        salt, key = self.password[:16], self.password[16:]
+        test = hashlib.pbkdf2_hmac('sha256', raw.encode(), salt, 100_000)
+        return test == key
 
     def mask_password(self):
         return '*' * len(self.password)
@@ -88,22 +99,16 @@ class loginData:
         "username": self.username,
         "password": self.password,
         "pin": self.pin
-
-        
+        }
     
-    }
-#Classes
     @classmethod
     def from_dict(cls, data):
         return cls(data["username"], data["password"], data["password"], data["pin"])
-class userData:
-    def __init__(self,captureCount,remainCount):
-        self.captureCount = captureCount
-        self.remainCount = remainCount
-
-    def display(self):
-        print(f"Pokémon quantity caught: {self.captureCount}")
-        print(f"Pokémon quantity remaining: {self.remainCount} ")
+    
+    @property
+    def is_locked(self):
+        return self.login_attempts >= 3
+    
 class Pokemon:
     def __init__(self, name, types, evolves_to, caught=False):
         self.name = name
@@ -118,6 +123,27 @@ class Pokemon:
             "evolves_to": self.evolves_to,
             "caught": self.caught
         }
+    @classmethod
+    def from_dict(cls, data):
+        return cls(
+            name=data["name"],
+            types=data["type"],
+            evolves_to=data.get("evolves_to", []),
+            caught=data.get("caught", False)
+        )
+    
+    def __repr__(self):
+        status = "✓" if self.caught else "✗"
+        return f"<Pokemon {self.name} ({'/'.join(self.types)}) {status}>"
+    
+    def catch(self):
+        if not self.caught:
+            self.caught = True
+        else:
+            raise RuntimeError(f"{self.name} already caught!")
+            
+    def release(self):
+        self.caught = False
 
 def get_valid_integer(prompt):
     while True:
@@ -129,10 +155,10 @@ def login():
 
     while True:   
         print("")
-        print("-Main Menu-")
-        print("1.) Log In")
-        print("2.) New User")
-        print('3.) Exit')
+        print("-CLI Menu-")
+        print("1. Log In")
+        print("2. New User")
+        print('3. Exit')
         print("")
 
         menu_choice = get_valid_integer("Choose an option: ")
@@ -165,6 +191,12 @@ def login():
                 else:
                     print("User not found. Please try again.")
                     break
+        if menu_choice == 2:
+            new_user()
+        elif menu_choice == 3:
+            print("Exiting program. Goodbye!")
+            sys.exit()
+
 def new_user():
     print("-Create New Account-")
     while True:
@@ -183,26 +215,33 @@ def new_user():
 
                     c_pin = input("Confirm 4-digit PIN: ")
                     if pin == c_pin:
-                        fav_pk = input("Optional: who is your favorite Pokemon? ").strip().lower()
-
-                        match = next((p for p in national_pokedex if p["name"]["english"].lower() == fav_pk), None)
+                        print("Login successful.")
                         
-                        if match:
-                            print(json.dumps(match, indent=2))
-                        else:
-                            print(f"{fav_pk.title()} not found in the Pokédex.")                        
                     break
             break
-def catch_false():
-    for pokemon in national_pokedex:
-        if not pokemon.get("caught", False):
-            print(pokemon["name"]["english"])
-def catch_true():
-    for pokemon in national_pokedex:
-        if pokemon.get("caught", False):
-            print(pokemon["name"]["english"])
+def catch_check(name):
+    for p in pokemon_list:
+        if p.name.lower() == name.lower():
+            return p.caught
+    return False
+def ensure_list_files():
 
 
+    for filename in ('caught_list.txt', 'uncaught_list.txt'):
+        if not os.path.isfile(filename):
+            with open(filename, 'w', encoding='utf-8'):
+                pass
+
+def mainApp():
+    while True:
+        login()
+        # if login() == False:
+        #     new_user()
+
+
+
+
+ensure_list_files()
 
 try:
     with open("users.json", "r") as f:
@@ -232,6 +271,4 @@ users = {}
 user = loginData("Ash", "pikachu123", "pikachu123", 1234)
 users[user.username.lower()] = user
 
-
-
-new_user()
+mainApp()
