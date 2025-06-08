@@ -1,0 +1,12 @@
+{
+  "dave": {
+    "username": "Dave",
+    "password_hash": "fe76a04f5e6ce7d8c1e8bdc643714ea9a9c963a3dd20d5bb3cf23594e18f3056f74d25b05acb35a0764a1ce8fcbb37c7",
+    "pin": "1337"
+  },
+  "davesmells123": {
+    "username": "davesmells123",
+    "password_hash": "1b0cfdec87e4fe5cd365e6b75ef2b3c75b631cb3f517b66c8ed2ca48360f35bb5e08f77c987fbd6336b33e6fb4c2a8a6",
+    "pin": "2589"
+  }
+}

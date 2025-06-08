@@ -2,3 +2,6 @@
 #thin loop that calls all data models
 
 import json, sys, os
+from models import LoginData, Pokemon
+
+print("Hello World")

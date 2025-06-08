@@ -50,7 +50,6 @@ class LoginData:
     def __repr__(self):
         return (f"<LoginData {self.username!r} locked={self.is_locked}>")
 
-    
 class Pokemon:
     def __init__(self, name, types, evolves_to, caught=False):
         self.name = name
