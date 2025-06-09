@@ -4,16 +4,13 @@ from models import LoginData, Pokemon
 USERS_FILE = "users.json"
 
 def load_users(filename=USERS_FILE):
-    """Load existing users from disk (or return empty dict)."""
     if not os.path.isfile(filename):
         return {}
     with open(filename, "r", encoding="utf-8") as f:
         data = json.load(f)
-    # data: { username_lower: {username, password_hash, pin}, … }
     return {u: LoginData.from_dict(d) for u, d in data.items()}
 
 def save_users(users, filename=USERS_FILE):
-    """Persist users dict to disk."""
     with open(filename, "w", encoding="utf-8") as f:
         payload = {u: users[u].to_dict() for u in users}
         json.dump(payload, f, indent=2)
@@ -39,11 +36,34 @@ def register_account():
     except ValueError as e:
         print(f"⚠️  {e}")
         return
-
-    # everything’s valid—save it
+    
     users[key] = new_user
     save_users(users)
     print(f"✅  Account for '{username}' created successfully!")
+
+def do_login():
+    users = load_users()
+
+    username = input("Enter your account name: ").strip()
+    key = username.lower()
+    if key not in users:
+        print(f"⚠️  No account found for '{username}'.")
+        return
+
+    user = users[key]
+    for _ in range(3):
+        pw = input("Enter your password: ")
+        if user.check_password(pw):
+            print(f"✅  Welcome back, {user.username}!")
+            user.reset_attempts()
+            return
+        else:
+            user.increment_attempts()
+            remaining = 3 - user.login_attempts
+            print(f"❌  Incorrect password. {remaining} attempt(s) left.")
+            if user.is_locked:
+                print("🔒  Too many failed attempts—account locked.")
+                return
 
 def initialize_user(): 
     os.system('cls' if os.name=='nt' else 'clear')
@@ -83,17 +103,26 @@ def landing_menu():
             
             register_account()
 
-            # register_account()
         elif user_selection == 2:
             os.system('cls' if os.name=='nt' else 'clear')
-            print("You chose: Log In")
-            print("")
-            time.sleep(2)
+            print("You chose: Log In\n")
+            time.sleep(1)
+            do_login()
+
+
         elif user_selection == 3:
             print("You chose: Help")
+            os.system('cls' if os.name=='nt' else 'clear')
+            time.sleep(1)
+            print("For all inquiries please reach out to david.parisi90@gmail.com")
+            print("Returning to main menu...")
+            time.sleep(5)
+            continue
             # show_help()
         elif user_selection == 4:
             print("You chose: About")
+            print("TermiDex version: 1.01 beta release")
+            input("\nPress Enter to return to the menu…")
             # show_about()
         elif user_selection == 5:
             print("Saving critical data...")
