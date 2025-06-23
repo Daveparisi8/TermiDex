@@ -1,5 +1,6 @@
 import json, sys, os, time
 from models import LoginData, Pokemon
+import services
 
 USERS_FILE = "users.json"
 
@@ -54,13 +55,13 @@ def do_login():
     for _ in range(3):
         pw = input("Enter your password: ")
         if user.check_password(pw):
-            print(f"✅  Welcome back, {user.username}!")
+            print(f"Welcome back, {user.username}!")
             user.reset_attempts()
             return
         else:
             user.increment_attempts()
             remaining = 3 - user.login_attempts
-            print(f"❌  Incorrect password. {remaining} attempt(s) left.")
+            print(f"Incorrect password. {remaining} attempt(s) left.")
             if user.is_locked:
                 print("🔒  Too many failed attempts—account locked.")
                 return
@@ -118,12 +119,12 @@ def landing_menu():
             print("Returning to main menu...")
             time.sleep(5)
             continue
-            # show_help()
+
         elif user_selection == 4:
             print("You chose: About")
             print("TermiDex version: 1.01 beta release")
             input("\nPress Enter to return to the menu…")
-            # show_about()
+
         elif user_selection == 5:
             print("Saving critical data...")
             time.sleep(1)
@@ -142,13 +143,9 @@ def landing_menu():
             print("Invalid entry. Please try again.")
 
         input("\nPress Enter to return to the menu…")
-        # loop back
+
 
 def app():
     initialize_user()
     time.sleep(5)
     landing_menu()
-
-
-if __name__ == "__main__":
-    app()
